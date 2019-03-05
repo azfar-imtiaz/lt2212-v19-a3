@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pickle
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 
 # test.py -- Don't forget to put a reasonable amount code comments
 # in so that we better understand what you're doing when we grade!
@@ -20,9 +21,23 @@ parser.add_argument("modelfile", type=str,
 args = parser.parse_args()
 
 print("Loading data from file {}.".format(args.datafile))
+test_df = pd.read_csv(args.datafile)
+
+# drop the first column
+test_df.drop(test_df.columns[0], axis=1, inplace=True)
+
+Y = list(test_df[test_df.columns[-1]])
+X = test_df.drop(test_df.columns[-1], axis=1)
+
 print("Loading model from file {}.".format(args.modelfile))
+clf = pickle.load(open(args.modelfile, 'rb'))
 
 print("Testing {}-gram model.".format(args.ngram))
+predictions = clf.predict(X)
 
 print("Accuracy is ...")
+print(accuracy_score(Y, predictions))
+
 print("Perplexity is...")
+# this could be the prediction probabilities of all elements in the test set, summed up and 
+# divided by total number of samples. This gives entropy. 2^entropy = perplexity. Not sure though

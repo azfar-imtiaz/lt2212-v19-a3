@@ -20,8 +20,27 @@ parser.add_argument("modelfile", type=str,
 args = parser.parse_args()
 
 print("Loading data from file {}.".format(args.datafile))
+# this delimiter should not be needed; something is wrong!
+train_df = pd.read_csv(args.datafile)
+
 print("Training {}-gram model.".format(args.ngram))
+# drop the first column, which contains the index or something
+train_df.drop(train_df.columns[0], axis=1, inplace=True)
+
+# get labels
+Y = list(train_df[train_df.columns[-1]])
+# get features, which are the encoded vectors
+X = train_df.drop(train_df.columns[-1], axis=1)
+
+# initialize the classifier
+clf = LogisticRegression(multi_class='multinomial', solver='lbfgs')
+# train the classifier
+clf.fit(X, Y)
+
 print("Writing table to {}.".format(args.modelfile))
+# dump the classifier to disk
+pickle.dump(clf, open(args.modelfile, 'wb'))
+
 
 # YOU WILL HAVE TO FIGURE OUT SOME WAY TO INTERPRET THE FEATURES YOU CREATED.
 # IT COULD INCLUDE CREATING AN EXTRA COMMAND-LINE ARGUMENT OR CLEVER COLUMN
