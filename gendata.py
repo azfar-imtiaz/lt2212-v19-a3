@@ -113,8 +113,10 @@ text_lines = load_text_from_file(args.inputfile)
 print("Starting from line {}.".format(args.startline))
 if args.endline:
     print("Ending at line {}.".format(args.endline))
+    text_lines = text_lines[args.startline : args.endline]
 else:
     print("Ending at last line of file.")
+    text_lines = text_lines[args.startline : ]
 
 print("Constructing {}-gram model.".format(args.ngram))
 # text_lines = text_lines[:1]
