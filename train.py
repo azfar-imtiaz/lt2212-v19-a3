@@ -23,7 +23,7 @@ print("Loading data from file {}.".format(args.datafile))
 # this delimiter should not be needed; something is wrong!
 train_df = pd.read_csv(args.datafile)
 
-print("Training {}-gram model.".format(args.ngram))
+print("Training model.")
 # drop the first column, which contains the index or something
 train_df.drop(train_df.columns[0], axis=1, inplace=True)
 

@@ -32,12 +32,21 @@ X = test_df.drop(test_df.columns[-1], axis=1)
 print("Loading model from file {}.".format(args.modelfile))
 clf = pickle.load(open(args.modelfile, 'rb'))
 
-print("Testing {}-gram model.".format(args.ngram))
+print("Testing model.")
 predictions = clf.predict(X)
 
 print("Accuracy is ...")
 print(accuracy_score(Y, predictions))
 
 print("Perplexity is...")
+pred_probs = []
+for index in range(len(X)):
+    elem = X.iloc[index]
+    prediction_probs = clf.predict_proba([elem])[0]
+    max_prob = max(prediction_probs)
+    pred_probs.append(max_prob)
+entropy = sum(pred_probs) / len(pred_probs)
+perplexity = 2**entropy
+print(perplexity)
 # this could be the prediction probabilities of all elements in the test set, summed up and 
 # divided by total number of samples. This gives entropy. 2^entropy = perplexity. Not sure though

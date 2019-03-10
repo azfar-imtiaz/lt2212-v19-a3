@@ -9,10 +9,15 @@ import pandas as pd
 # in so that we better understand what you're doing when we grade!
 
 # this function removes the POS tags from text, returning only words
-def get_words_from_line(line):
-    # regex to remove POS tags or punctuation marks followed by a slash
-    rg = r'\/[^\s]+'
+def get_words_from_line(line, use_pos):
+    # get the word and remove anything following the slash
+    if use_pos is False:
+        rg = r'\/[^\s]+'
+    # get the POS tag and remove anything before the slash
+    else:
+        rg = r'[^\s]+\/'
     line = re.sub(rg, '', line)
+
     # replace multiple spaces with a single space
     line = re.sub(r'\s+', ' ', line)
     line = line.strip()
@@ -20,12 +25,12 @@ def get_words_from_line(line):
 
 
 # this function loads the text from file, removing POS tags
-def load_text_from_file(filename):
+def load_text_from_file(filename, use_pos=False):
     text_lines = []
     with open(filename, 'r') as rfile:
         for line in rfile:
             # get only words from this line; remove POS tags
-            line = get_words_from_line(line)
+            line = get_words_from_line(line, use_pos)
             text_lines.append(line)
 
     return text_lines
@@ -104,6 +109,10 @@ parser.add_argument("-E", "--end", metavar="E", dest="endline",
 parser.add_argument("-T", "--test-lines", metavar="T", dest="testlines",
                     type=int, default=5,
                     help="How many lines in the selected number of lines should be used for testing.")
+# parser.add_argument("-P", "--use-pos", metavar="P", dest='usepos', type=int, default=0,
+#                     help="Decide whether the POS tags should be used for model or the text, or both. Default is False, which means text will be used. Specify 0 to use only text, specify 1 to use only POS tags, and specify 2 to use both.")
+parser.add_argument("-P" "--use-pos", action="store_true", default=False, dest='usepos',
+                    help="Should the POS tags be used for building and training the model, instead of the words? Default is False, which means words will be used.")
 parser.add_argument("inputfile", type=str,
                     help="The file name containing the text data.")
 parser.add_argument("outputfile", type=str,
@@ -111,8 +120,19 @@ parser.add_argument("outputfile", type=str,
 
 args = parser.parse_args()
 
+# if args.usepos == 1:
+#     print("Using POS tags for the model!")
+# elif args.usepos == 2:
+#     print("Using words and POS tags for the model!")
+# else:
+#     print("Using only words for the model!")
+if args.usepos is True:
+    print("Using POS tags for the model!")
+else:
+    print("Using words for the model!")
+
 print("Loading data from file {}.".format(args.inputfile))
-text_lines = load_text_from_file(args.inputfile)
+text_lines = load_text_from_file(args.inputfile, args.usepos)
 
 print("Starting from line {}.".format(args.startline))
 if args.endline:
